@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1355a0 #ffffff; /* Replace with your hex codes */
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff; /* Replace with your hex code */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #1355a0; /* Replace with your hex code */
+  border-radius: 20px;
+  border: 3px solid #ffffff; /* Replace with your hex code */
+}
