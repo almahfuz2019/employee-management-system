@@ -1,31 +1,21 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import EmployeeContext from "../../context/EmployeeContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useSingleEmployee from "../../Hooks/useSingleEmployee";
 
 const UpdateEmployee = () => {
   const { id } = useParams();
-  const data = useContext(EmployeeContext);
-  const { setGetId } = data;
+  //from Custom hook
+  const { singleEmployeeData, loadSingleEmployeeData } = useSingleEmployee(id);
   const navigate = useNavigate();
-  const [singleEmployeeData, setSingleEmployeeData] = useState({});
-  const loadSingleEmployeeData = useCallback(async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/${id}`);
-      const allData = response?.data;
-      setSingleEmployeeData(allData);
-    } catch (error) {
-      console.error("Error loading employee data:", error);
-      // setLoading(false);
-    }
-  }, [id]);
+  // get single employee data
+
   useEffect(() => {
     loadSingleEmployeeData();
   }, [loadSingleEmployeeData]);
 
-  setGetId(id);
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       firstName: singleEmployeeData?.firstName,
@@ -34,7 +24,7 @@ const UpdateEmployee = () => {
       salary: singleEmployeeData?.salary,
     },
   });
-
+  // update single employee data
   const onSubmit = async (data) => {
     try {
       await axios.put(`http://localhost:5000/${id}`, {
