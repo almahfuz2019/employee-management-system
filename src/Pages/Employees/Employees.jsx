@@ -1,8 +1,9 @@
 import { useContext, useEffect } from "react";
 import AllEmployees from "../../Component/Employees/AllEmployees";
-import Pagination from "../../Component/Employees/Pagination";
+
 import EmployeeContext from "../../context/EmployeeContext";
 const Employees = () => {
+  //show employees length
   const data = useContext(EmployeeContext);
   const { count, countLength } = data;
   useEffect(() => {
@@ -15,8 +16,8 @@ const Employees = () => {
           Total Employees: {count?.collectionLength}
         </span>
       </div>
-      <Pagination />
-      <AllEmployees/>
+      {/* show all employees  */}
+      <AllEmployees />
     </div>
   );
 };

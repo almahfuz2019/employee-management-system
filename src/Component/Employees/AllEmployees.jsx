@@ -1,69 +1,61 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import Card from "./Card";
 import EmployeeContext from "../../context/EmployeeContext";
 import Loading from "../Shared/Loading/Loading";
 const AllEmployees = () => {
   const data = useContext(EmployeeContext);
-  const { employeeData, loadEmployeeData, setEmployeeData,loading } = data;
-  const [keywords, setKeywords] = useState("");
-  //   const [productLoading, setProductLoading] = useState(true);
+  const { employeeData, loading, keywords, setKeywords, getSearchData } = data;
+  // get search keywords
   const handleSearch = (e) => {
     setKeywords(e.target.value);
   };
-  //   useEffect(() => {
-  //     loadEmployeeData();
-  //   }, []);
+  // data search by last name / keywords
   useEffect(() => {
-    const url = `http://localhost:5000/search-by-firstname?firstName=${keywords}`;
-    console.log(url);
-    if (keywords !== "") {
-      //  setProductLoading(true);
-      fetch(url)
-        .then((res) => res.json())
-        .then((data) => {
-          setEmployeeData(data);
-          // setProductLoading(false);
-        });
-    } else if (keywords === "") {
-      loadEmployeeData();
-    }
+    getSearchData();
   }, [keywords]);
-
-  //   if (productLoading) {
-  //     return <Loading />;
-  //   }
 
   return (
     <>
       {loading ? (
-        <Loading/>
+        <Loading />
       ) : (
-          <div>
-      <div className="mx-auto text-center mb-5">
-        <input
-          type="text"
-          placeholder="Search here by product name"
-          className="input input-bordered input-accent w-full sm:max-w-sm input-sm sm:input-md max-w-xs border border-primary"
-          onChange={handleSearch}
-        />
-      </div>
-      <table className="table w-full ">
-        <thead className="border">
-          <tr>
-            <th>No</th>
-            <th className="text-center">Name</th>
-            <th className="text-center">Category</th>
-            <th className="text-center">position</th>
-            <th className="text-center">Action</th>
-          </tr>
-        </thead>
+        <div>
+          <div className="mx-auto text-center mb-5">
+            <input
+              type="text"
+              placeholder="Search here by lastName"
+              className="input input-bordered input-accent w-full sm:max-w-sm input-sm sm:input-md max-w-xs border border-primary"
+              onChange={handleSearch}
+            />
+          </div>
+          {/* search data condation  */}
+          {employeeData?.length === 0 ? (
+            <p className="text-center text-2xl mb-2 text-red-700">
+              
+             No data available
+            </p>
+          ) : (
+            <p className="text-center text-2xl"></p>
+          )}
 
-        {employeeData?.map((item, index) => (
-          <Card key={item?._id} item={item} index={index} />
-        ))}
-      </table>
-    </div>)}
-       </>
+          <table className="table w-full ">
+            <thead className="border">
+              <tr>
+                <th>No</th>
+                <th className="text-center">First Name</th>
+                <th className="text-center">Last Name</th>
+                <th className="text-center">Position</th>
+                <th className="text-center">Actions</th>
+              </tr>
+            </thead>
+            {/* send data to card  */}
+            {employeeData?.map((item, index) => (
+              <Card key={item?._id} item={item} index={index} />
+            ))}
+          </table>
+        </div>
+      )}
+    </>
   );
 };
 export default AllEmployees;

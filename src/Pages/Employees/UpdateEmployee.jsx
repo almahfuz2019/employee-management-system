@@ -1,45 +1,74 @@
-import { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import EmployeeContext from "../../context/EmployeeContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const UpdateEmployee = () => {
   const { id } = useParams();
   const data = useContext(EmployeeContext);
-  const { loadSingleEmployeeData, singleEmployeeData, setGetId } = data;
-  setGetId(id);
+  const { setGetId } = data;
+  const navigate = useNavigate();
+  const [singleEmployeeData, setSingleEmployeeData] = useState({});
+  const loadSingleEmployeeData = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/${id}`);
+      const allData = response?.data;
+      setSingleEmployeeData(allData);
+    } catch (error) {
+      console.error("Error loading employee data:", error);
+      // setLoading(false);
+    }
+  }, [id]);
   useEffect(() => {
     loadSingleEmployeeData();
-  }, [id]);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  }, [loadSingleEmployeeData]);
+
+  setGetId(id);
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      position: data.position,
-      salary: data.salary,
-      status: data.status,
+      firstName: singleEmployeeData?.firstName,
+      lastName: singleEmployeeData?.lastName,
+      position: singleEmployeeData?.position,
+      salary: singleEmployeeData?.salary,
     },
   });
+
   const onSubmit = async (data) => {
     try {
-      const response = await axios.put(`http://localhost:5000/${id}`, {
+      await axios.put(`http://localhost:5000/${id}`, {
         firstName: data.firstName,
         lastName: data.lastName,
         position: data.position,
         salary: data.salary,
-        status: data.status,
       });
-      console.log("Data created:", response.data);
+
+      toast.success("Data updated successfully", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/employees");
+      reset();
     } catch (error) {
-      console.error("Error creating data:", error.message);
+      toast.error(`Error: ${error.message}`, {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
-
+  // input class style
+  const inputClassStyle = `w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out`;
   return (
     <div>
       <div>
@@ -51,7 +80,7 @@ const UpdateEmployee = () => {
                   className="text-gray-900 text-lg mb-1 
      title-font font-semibold"
                 >
-                  Add an employee
+                  Update an employee
                 </h2>
                 <div className="relative mb-4">
                   <label
@@ -66,11 +95,8 @@ const UpdateEmployee = () => {
                     {...register("firstName", {
                       required: "First Name is Required",
                     })}
-                    className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    className={inputClassStyle}
                   />
-                  {errors.firstName && (
-                    <p className="text-red-500">{errors.firstName.message}</p>
-                  )}
                 </div>
                 <div className="relative mb-4">
                   <label className="leading-7 text-sm text-gray-600">
@@ -83,11 +109,8 @@ const UpdateEmployee = () => {
                     {...register("lastName", {
                       required: "Last Name is Required",
                     })}
-                    className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    className={inputClassStyle}
                   />
-                  {errors.lastName && (
-                    <p className="text-red-500">{errors.lastName.message}</p>
-                  )}
                 </div>
                 <div className="relative mb-4">
                   <label className="leading-7 text-sm text-gray-600">
@@ -100,11 +123,8 @@ const UpdateEmployee = () => {
                     {...register("position", {
                       required: "Position Name is Required",
                     })}
-                    className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    className={inputClassStyle}
                   />
-                  {errors.position && (
-                    <p className="text-red-500">{errors.position.message}</p>
-                  )}
                 </div>
                 <div className="relative mb-4">
                   <label className="leading-7 text-sm text-gray-600">
@@ -117,36 +137,15 @@ const UpdateEmployee = () => {
                     {...register("salary", {
                       required: "Salary amount is Required",
                     })}
-                    className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                    className={inputClassStyle}
                   />
-                  {errors.salary && (
-                    <p className="text-red-500">{errors.salary.message}</p>
-                  )}
-                </div>
-
-                <div className="relative mb-4">
-                  <label className="leading-7 text-sm text-gray-600">
-                    {" "}
-                    Select status
-                    {singleEmployeeData?.status}
-                  </label>
-                  <select
-                    {...register("status")}
-                    className="select w-full  border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 rounded"
-                  >
-                    <option value="Available">Available</option>
-                    <option value="Unavailable">Unavailable </option>
-                  </select>
                 </div>
 
                 <input
-                  className="text-white bg-primary border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                  className="text-white bg-primary border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg cursor-pointer"
                   value="Submit"
                   type="submit"
                 />
-                <p className="text-xs text-gray-500 mt-3">
-                  This is very important for your website.So,be careful.
-                </p>
               </div>
             </div>
           </section>

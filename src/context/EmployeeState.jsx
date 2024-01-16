@@ -6,16 +6,37 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import React from 'react';
 const EmployeeState = (props) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState([]);
   const [singleEmployeeData, setSingleEmployeeData] = useState({});
   const [getId, setGetId] = useState("");
   const [count, setCount] = useState([]);
+  console.log(count);
+  const [keywords, setKeywords] = useState("");
+  // search data
+  const getSearchData = async () => {
+    try {
+      if (keywords !== "") {
+        const response = await fetch(
+          `http://localhost:5000/search-by-lastName?lastName=${keywords}`
+        );
+        const data = await response.json();
+        setEmployeeData(data);
+        console.log(data);
+        setCount(data.length);
+      } else if (keywords === "") {
+        loadEmployeeData();
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
   //   get all employee Data
   const loadEmployeeData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/alldata");
+      const response = await axios.get("http://localhost:5000/allemployees");
       const allData = response?.data;
       setEmployeeData(allData);
       setLoading(false);
@@ -49,16 +70,19 @@ const EmployeeState = (props) => {
   };
   //   delete an employee
   const handleDataDelete = async (id) => {
-    const proceed = window.confirm("Are you sure you want to delete?");
-    if (proceed) {
-      await axios.delete(`http://localhost:5000/${id}`).then((response) => {
-        if (response.status == 200) {
+    try {
+      const proceed = window.confirm("Are you sure you want to delete?");
+      
+      if (proceed) {
+        const response = await axios.delete(`http://localhost:5000/${id}`);
+        
+        if (response.status === 200) {
           setLoading(true);
           const remaining = employeeData.filter((item) => item._id !== id);
           setEmployeeData(remaining);
           setLoading(false);
-
-          toast.success("deleted successfully", {
+  
+          toast.success("Deleted successfully", {
             position: "top-right",
             autoClose: 1000,
             hideProgressBar: false,
@@ -68,9 +92,22 @@ const EmployeeState = (props) => {
             progress: undefined,
           });
         }
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error.message);
+      // Handle the error as needed, such as showing an error message to the user
+      toast.error("Error deleting data", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
     }
   };
+  
 
   return (
     <EmployeeContext.Provider
@@ -86,6 +123,9 @@ const EmployeeState = (props) => {
         setGetId,
         loading,
         getId,
+        keywords,
+        setKeywords,
+        getSearchData,
       }}
     >
       {props.children}

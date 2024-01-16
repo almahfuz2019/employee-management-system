@@ -57,16 +57,19 @@ const Navbar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 border"
             >
               {navItem}
             </ul>
           </div>
-          <Link to="/" className="btn font-bold btn-ghost text-2xl">EM</Link>
+          <Link to="/" className="btn font-bold btn-ghost text-3xl uppercase text-primary">
+          yeeman
+          </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{navItem}</ul>
         </div>
+        <div className="navbar-end"></div>
       </div>
     </>
   );

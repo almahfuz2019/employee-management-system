@@ -31,7 +31,8 @@ const Card = ({ item, index }) => {
   );
 };
 Card.propTypes = {
-  item: PropTypes.array.isRequired,
-  index: PropTypes.array.isRequired,
+  item: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
 };
+
 export default Card;

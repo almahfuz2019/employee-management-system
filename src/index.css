@@ -3,7 +3,7 @@
 @tailwind utilities;
 * {
   scrollbar-width: thin;
-  scrollbar-color: #1355a0 #ffffff; /* Replace with your hex codes */
+  scrollbar-color: #176F6B #ffffff; /* Replace with your hex codes */
 }
 
 /* Chrome, Edge, and Safari */
@@ -16,7 +16,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #1355a0; /* Replace with your hex code */
+  background-color: #176F6B; /* Replace with your hex code */
   border-radius: 20px;
   border: 3px solid #ffffff; /* Replace with your hex code */
 }
